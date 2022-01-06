@@ -42,9 +42,9 @@ internal class MyAdapter(private val context: Context) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, container: ViewGroup?): View {
         var convertView: View? = convertView
-        // if (convertView == null) {
-        convertView = layoutInflater.inflate(R.layout.simple_list_item, container, false)
-        // }
+        if (convertView == null) {
+            convertView = layoutInflater.inflate(R.layout.simple_list_item, container, false)
+        }
 
         val item = getItem(position)
         val date = item.now.plusDays(item.offset.toLong()).toLocalDate().atStartOfDay()
