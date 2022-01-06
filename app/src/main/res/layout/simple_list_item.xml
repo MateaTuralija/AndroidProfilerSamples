@@ -23,5 +23,4 @@
         android:fontFamily="sans-serif-light"
         android:lines="1"
         tools:text="Remaining: 2 d 1 h 23 min 5 s" />
-
 </LinearLayout>
