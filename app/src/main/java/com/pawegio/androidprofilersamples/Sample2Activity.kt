@@ -1,22 +1,22 @@
 package com.pawegio.androidprofilersamples
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
-import kotlinx.android.synthetic.main.sample_2_activity.*
+import kotlinx.android.synthetic.main.sample_1_activity.*
 import kotlinx.android.synthetic.main.simple_list_item.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
-class Sample2Activity : AppCompatActivity() {
+class Sample1Activity : AppCompatActivity() {
 
     private val items = mutableListOf<Item>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.sample_2_activity)
+        setContentView(R.layout.sample_1_activity)
 
         recyclerView.adapter = basicAdapterWithLayoutAndBinder(
             items, R.layout.simple_list_item, ::bindItem
@@ -27,14 +27,22 @@ class Sample2Activity : AppCompatActivity() {
 
     private fun refreshData() {
         items.run { clear(); addAll(generateItems()) }
-        recyclerView.adapter.notifyDataSetChanged()
+        recyclerView.adapter?.notifyDataSetChanged()
         swipeRefreshLayout.isRefreshing = false
     }
 }
 
 private fun generateItems(): List<Item> {
     val now = LocalDateTime.now()
-    return List(1_000) { Item(now, it + 1) }
+    return List(100_000) { createItem(now, it + 1) }
+}
+
+private fun createItem(now: LocalDateTime, offset: Int): Item {
+    val date = now.plusDays(offset.toLong()).toLocalDate().atStartOfDay()
+    return Item(
+        formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        remainingTime = getRemainingTime(now, date)
+    )
 }
 
 private fun getRemainingTime(start: LocalDateTime, end: LocalDateTime): String {
@@ -52,10 +60,8 @@ private fun getRemainingTime(start: LocalDateTime, end: LocalDateTime): String {
 }
 
 private fun bindItem(holder: ViewHolderBinder<Item>, item: Item) = with(holder.itemView) {
-    val date = item.now.plusDays(item.offset.toLong()).toLocalDate().atStartOfDay()
-    val remainingTime = getRemainingTime(item.now, date)
-    dateView.text = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-    remainingTimeView.text = resources.getString(R.string.remaining, remainingTime)
+    dateView.text = item.formattedDate
+    remainingTimeView.text = resources.getString(R.string.remaining, item.remainingTime)
 }
 
-private data class Item(val now: LocalDateTime, val offset: Int)
+private data class Item(val formattedDate: String, val remainingTime: String)
