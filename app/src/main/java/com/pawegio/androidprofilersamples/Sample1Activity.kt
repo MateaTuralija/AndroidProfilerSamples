@@ -1,61 +1,68 @@
 package com.pawegio.androidprofilersamples
 
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
-import kotlinx.android.synthetic.main.sample_1_activity.*
-import kotlinx.android.synthetic.main.simple_list_item.view.*
-import org.threeten.bp.Duration
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.format.DateTimeFormatter
+import com.pawegio.androidprofilersamples.model.Article
+import kotlinx.android.synthetic.main.sample_1_activity.recyclerView
+import kotlinx.android.synthetic.main.sample_1_activity.swipeRefreshLayout
+import kotlinx.android.synthetic.main.simple_list_item.view.titleView
+import kotlinx.android.synthetic.main.simple_list_item.view.authorView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+
 
 class Sample1Activity : AppCompatActivity() {
 
-    private val items = mutableListOf<Item>()
+    private val viewModel by viewModels<NewsViewModel>()
+    private var refreshInitiated = false
+
+    private val items = mutableListOf<Article>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sample_1_activity)
 
         recyclerView.adapter = basicAdapterWithLayoutAndBinder(
-            items, R.layout.simple_list_item, ::bindItem
+                items, R.layout.simple_list_item, ::bindItem
         )
 
         swipeRefreshLayout.setOnRefreshListener(::refreshData)
+
+        viewModel.newsResponse.observe(this, {
+            items.addAll(it.articles)
+            recyclerView.adapter?.notifyDataSetChanged()
+        })
     }
 
     private fun refreshData() {
-        items.run { clear(); addAll(generateItems()) }
-        recyclerView.adapter?.notifyDataSetChanged()
+        Log.d("TAG", "44 Sample1Activity.refreshData: REFRESH DATA POZVAN")
+
+        viewModel.fetchExample()
+
         swipeRefreshLayout.isRefreshing = false
+        if (!refreshInitiated) {
+            startRefreshJob()
+            refreshInitiated = true
+        }
+    }
+
+    private fun startRefreshJob() {
+        lifecycleScope
+                .launchWhenResumed {
+                    while (coroutineContext.isActive) {
+                        refreshData()
+                        delay(5000L)
+                    }
+                }
+    }
+
+    private fun bindItem(holder: ViewHolderBinder<Article>, item: Article) = with(holder.itemView) {
+        titleView.text = item.title
+        authorView.text = item.author
     }
 }
-
-private fun generateItems(): List<Item> {
-    val now = LocalDateTime.now()
-    return List(100_000) { Item(now, it + 1) }
-}
-
-private fun getRemainingTime(start: LocalDateTime, end: LocalDateTime): String {
-    val duration = Duration.between(start, end)
-    val days = duration.toDays()
-    val hours = duration.minusDays(days).toHours()
-    val minutes = duration.minusDays(days).minusHours(hours).toMinutes()
-    val seconds = duration.minusDays(days).minusHours(hours).minusMinutes(minutes).seconds
-    return buildString {
-        if (days > 0) append("$days d")
-        if (hours > 0) append(" $hours h")
-        if (minutes > 0) append(" $minutes min")
-        if (seconds > 0) append(" $seconds s")
-    }.trim()
-}
-
-private fun bindItem(holder: ViewHolderBinder<Item>, item: Item) = with(holder.itemView) {
-    val date = item.now.plusDays(item.offset.toLong()).toLocalDate().atStartOfDay()
-    val remainingTime = getRemainingTime(item.now, date)
-    dateView.text = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-    remainingTimeView.text = resources.getString(R.string.remaining, remainingTime)
-}
-
-private data class Item(val now: LocalDateTime, val offset: Int)
