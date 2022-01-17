@@ -28,7 +28,7 @@ class NewsViewModel : ViewModel() {
     fun fetchExample() {
         viewModelScope.launch {
             val response = safeResponse {
-                ApiClient.api.fetchEverything("tesla", "2021-12-15", API_KEY)
+                ApiClient.api.fetchEverything("tesla", 100, API_KEY)
             }
             if (response is Result.Success) {
                 _newsResponse.value = response.data!!

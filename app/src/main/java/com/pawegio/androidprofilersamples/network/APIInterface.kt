@@ -12,6 +12,6 @@ interface APIInterface {
     suspend fun getLatestNews(@Query("sources") source: String, @Query("apiKey") apiKey: String): ResponseModel
 
     @GET("everything")
-    suspend fun fetchEverything(@Query("q") query: String, @Query("from") from: String, @Query("apiKey") apiKey: String): ResponseModel
+    suspend fun fetchEverything(@Query("q") query: String, @Query("pageSize") pageSize: Int, @Query("apiKey") apiKey: String): ResponseModel
 
 }

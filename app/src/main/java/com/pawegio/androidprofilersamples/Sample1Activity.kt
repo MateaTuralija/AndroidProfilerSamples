@@ -32,7 +32,7 @@ class Sample1Activity : AppCompatActivity() {
         )
 
         swipeRefreshLayout.setOnRefreshListener(::refreshData)
-
+        refreshData()
         viewModel.newsResponse.observe(this, {
             items.addAll(it.articles)
             recyclerView.adapter?.notifyDataSetChanged()
@@ -56,7 +56,7 @@ class Sample1Activity : AppCompatActivity() {
                 .launchWhenResumed {
                     while (coroutineContext.isActive) {
                         refreshData()
-                        delay(5000L)
+                        delay(15000L)
                     }
                 }
     }
