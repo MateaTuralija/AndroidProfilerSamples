@@ -46,6 +46,7 @@ class Sample1Activity : AppCompatActivity() {
 
         swipeRefreshLayout.isRefreshing = false
         if (!refreshInitiated) {
+            // delete or comment this line if you want to avoid periodic API requests
             startRefreshJob()
             refreshInitiated = true
         }
