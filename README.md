@@ -8,5 +8,5 @@ Memory optimization
 - [Before optimization](https://github.com/MateaTuralija/AndroidProfilerSamples/tree/memory-before) (branch: memory-before)
 - [After optimization](https://github.com/MateaTuralija/AndroidProfilerSamples/tree/memory-after) (branch: memory-after)
 
-Network
-- (https://github.com/MateaTuralija/AndroidProfilerSamples/tree/network) (branch: network)
+Network and Energy optimization
+- [Network](https://github.com/MateaTuralija/AndroidProfilerSamples/tree/network) (branch: network)
