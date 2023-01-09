@@ -1,4 +1,4 @@
-# Android Profiler Sample
+# Android Profiler Samples
 
 CPU optimization
 - [Before optimization](https://github.com/MateaTuralija/AndroidProfilerSamples/tree/before) (branch: before)
