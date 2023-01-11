@@ -1,5 +1,6 @@
 package com.pawegio.androidprofilersamples
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -23,6 +24,7 @@ class Sample1Activity : AppCompatActivity() {
 
     private val items = mutableListOf<Article>()
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sample_1_activity)
@@ -33,10 +35,10 @@ class Sample1Activity : AppCompatActivity() {
 
         swipeRefreshLayout.setOnRefreshListener(::refreshData)
         refreshData()
-        viewModel.newsResponse.observe(this, {
+        viewModel.newsResponse.observe(this) {
             items.addAll(it.articles)
             recyclerView.adapter?.notifyDataSetChanged()
-        })
+        }
     }
 
     private fun refreshData() {
